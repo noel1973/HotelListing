@@ -11,6 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HotelListing.Configurations;
+using HotelListing.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelListing
 {
@@ -27,21 +30,25 @@ namespace HotelListing
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
 
+            services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("sqlConnection")));
             services.AddCors(o =>
             {
                 o.AddPolicy("AllowAll", builder =>
                     builder.AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowAnyOrigin());
-
             });
+
+            services.AddAutoMapper(typeof(MapperInitializer));
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HotelListing", Version = "v1" });
             });
+
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
